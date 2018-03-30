@@ -16,6 +16,8 @@ var currentLocation = {
     what3words: "shelf.jetted.purple"
 };
 
+
+
 /**
  * Switch channels name in the right app bar
  * @param channelObject
@@ -28,11 +30,11 @@ function switchChannel(channelObject) {
     document.getElementById('channel-name').innerHTML = channelObject.name;
 
     //#7 #clob #dgst change the channel location using object property
-    document.getElementById('channel-location').innerHTML = 'by <a href="http://w3w.co/'
-        + channelObject.createdBy
-        + '" target="_blank"><strong>'
-        + channelObject.createdBy
-        + '</strong></a>';
+    document.getElementById('channel-location').innerHTML = 'by <a href="http://w3w.co/' +
+        channelObject.createdBy +
+        '" target="_blank"><strong>' +
+        channelObject.createdBy +
+        '</strong></a>';
 
     /* #7 #clob #trn remove either class */
     $('#chat h1 i').removeClass('fa-star fa-star-o');
@@ -80,6 +82,7 @@ function selectTab(tabId) {
  */
 function toggleEmojis() {
     $('#emojis').toggle(); // #toggle
+
 }
 
 /**
@@ -105,9 +108,22 @@ function sendMessage() {
     // #8 Create a new #message to #send and log it.
     //var message = new Message("Hello chatter");
 
-    // #8 let's now use the #real message #input
-    var message = new Message($('#message').val());
-    console.log("New message:", message);
+
+    // #10 message
+    var textmessage = $('#message').val();
+    if (textmessage.length > 0) {
+        // #8 let's now use the #real message #input
+        var message = new Message($('#message').val());
+        console.log("New message:", message);
+    }
+    //#10 push
+    currentChannel.messages.push(message);
+    channelMessages.push(createMessageElement(message));
+    //#10 increase message
+    currentChannel.messageCount = messageCount + 1;
+
+
+
 
     // #8 nicer #message #append with jQuery:
     $('#messages').append(createMessageElement(message));
@@ -118,6 +134,7 @@ function sendMessage() {
 
     // #8 #clear the #message input
     $('#message').val('');
+
 }
 
 /**
@@ -130,31 +147,62 @@ function createMessageElement(messageObject) {
     var expiresIn = Math.round((messageObject.expiresOn - Date.now()) / 1000 / 60);
 
     // #8 #message #element
-    return '<div class="message'+
+    return '<div class="message' +
         //this dynamically adds the class 'own' (#own) to the #message, based on the
         //ternary operator. We need () in order to not disrupt the return.
         (messageObject.own ? ' own' : '') +
         '">' +
-        '<h3><a href="http://w3w.co/' + messageObject.createdBy + '" target="_blank">'+
+        '<h3><a href="http://w3w.co/' + messageObject.createdBy + '" target="_blank">' +
         '<strong>' + messageObject.createdBy + '</strong></a>' +
         messageObject.createdOn.toLocaleString() +
-        '<em>' + expiresIn+ ' min. left</em></h3>' +
-        '<p>' + messageObject.text + '</p>' +
-        '<button>+5 min.</button>' +
+        '<em>' + expiresIn + ' min. left</em></h3>' +
+        '<p class="s2dp">' + messageObject.text + '</p>' +
+        '<button class="accentbutton">+5 min.</button>' +
         '</div>';
 }
 
 
-function listChannels() {
+function listChannels(tabname) {
     // #8 #channel #onload
     //$('#channels ul').append("<li>New Channel</li>")
+    //#9 use for array
+    for (i = 0; i < channels.length; i++) {
+        $('#channels ul').append(createChannelElement(channels[i]))
+    }
 
-    // #8 #channels make five #new channels
-    $('#channels ul').append(createChannelElement(yummy));
-    $('#channels ul').append(createChannelElement(sevencontinents));
-    $('#channels ul').append(createChannelElement(killerapp));
-    $('#channels ul').append(createChannelElement(firstpersononmars));
-    $('#channels ul').append(createChannelElement(octoberfest));
+    //#10sort channels
+    if (tabname == 'new') {
+        function sortnew()
+    } else if (tabname == 'trending') {
+        function sorttrending()
+    } else(tabname == 'favorites') {
+        function sortfavorites()
+    }
+}
+
+//#10 3 functions
+function sortnew(channel1, channel2) {
+    if (channel1.createdOn > channel2.createdOn) {
+        return -1;
+    } else {
+        return 1
+    }
+}
+
+function sorttrending(channel1, channel2) {
+    if (channel1.messageCount > channel2.messageCount) {
+        return -1;
+    } else {
+        return 1;
+    }
+}
+
+function sortfavorites(channel1, channel2) {
+    if (channel1.starred > channel2.starred) {
+        return -1;
+    } else {
+        return 1;
+    }
 }
 
 /**
@@ -192,4 +240,10 @@ function createChannelElement(channelObject) {
 
     // return the complete channel
     return channel;
+}
+
+//#9 create new channel
+
+function newChannel() {
+
 }
